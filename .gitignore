@@ -155,3 +155,4 @@ flycheck_*.el
 cache
 proxify.log
 cookies.dat
+info.php

@@ -12,11 +12,19 @@ define('PROXIFY_LOG_LEVEL_NONE', 0);
 require_once 'config.php';
 
 set_exception_handler(function($exception) {
-  error((string)$exception);
+  $m = (string)$exception;
+  error($m);
+  if (defined('PROXIFY_OUTPUT_ERRORS')) {
+    echo $exception;
+  }
 });
 
 set_error_handler(function($code, $message, $file, $line, $context) {
-  error("#$code: $message - $file:$line");
+  $m = "#$code: $message - $file:$line";
+  error($m);
+  if (defined('PROXIFY_OUTPUT_ERRORS')) {
+    echo $m;
+  }
 });
 
 function logMessage($m, $level) {
