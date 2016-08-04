@@ -3,17 +3,43 @@
 require_once 'http/Response.php';
 require_once 'http/Request.php';
 
+define('PROXIFY_LOG_LEVEL_DEBUG', 4);
+define('PROXIFY_LOG_LEVEL_INFO', 3);
+define('PROXIFY_LOG_LEVEL_WARN', 2);
+define('PROXIFY_LOG_LEVEL_ERROR', 1);
+define('PROXIFY_LOG_LEVEL_NONE', 0);
+
 require_once 'config.php';
 
-if (defined('PROXIFY_LOG_LEVEL')) {
-  define('DEBUG', true);
-}
+set_exception_handler(function($exception) {
+  error((string)$exception);
+});
 
-function debug($m) {
-  if (defined('PROXIFY_LOG_LEVEL') && defined('PROXIFY_LOG_FILE')) {
+set_error_handler(function($code, $message, $file, $line, $context) {
+  error("#$code: $message - $file:$line");
+});
+
+function logMessage($m, $level) {
+  if (defined('PROXIFY_LOG_LEVEL') && defined('PROXIFY_LOG_FILE') && constant('PROXIFY_LOG_LEVEL') >= $level) {
     $d = date('Y-m-d H:i:s');
     return file_put_contents(constant('PROXIFY_LOG_FILE'), "$d - $m\n", FILE_APPEND);
   }
+}
+
+function info($m) {
+  logMessage("[INFO] $m", PROXIFY_LOG_LEVEL_INFO);
+}
+
+function warn($m) {
+  logMessage("[WARN] $m", PROXIFY_LOG_LEVEL_WARN);
+}
+
+function error($m) {
+  logMessage("[ERROR] $m", PROXIFY_LOG_LEVEL_ERROR);
+}
+
+function debug($m) {
+  logMessage("[DEBUG] $m", PROXIFY_LOG_LEVEL_DEBUG);
 }
 
 function getMethod() {
@@ -179,11 +205,18 @@ function proxify($method, $url) {
   $responses = $request->execute();
   if ($responses !== false) {
     $response = end($responses);
-    if (isCacheEnabled()) {
+    $status = $response->getStatus();
+    if (isCacheEnabled() && $status < 300 && $status >= 200) {
       setCacheUrl($url, $response->getBody());
     }
 
     $host = parse_url($url, PHP_URL_HOST);
+    if ($status >= 300 && $status < 400) {
+      info("Url $url returned $status");
+    } else if ($status >= 400) {
+      warn("Url $url returned $status");
+    }
+
     $response->proxify($url, PROXIFY_URL);
     $response->setHeader('Access-Control-Allow-Origin', '*');
     $response->setHeader('X-Proxified-URL', $url);

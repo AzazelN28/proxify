@@ -1,18 +1,31 @@
 #!/bin/bash
 case $1 in
-	start)
+  dev|start)
     rm -rf cache/*
     rm proxify.log
     rm cookies.dat
     php -S 127.0.0.1:9000
 	;;
-	clean)
+	cl|clean)
     rm -rf cache/*
     rm proxify.log
     rm cookies.dat
 	;;
-  cache-size)
+  log|show-log)
+    if [[ -f proxify.log ]]; then
+      tail -f proxify.log
+    else
+      echo "Log not available, proxify.log doesn't exists"
+    fi
+  ;;
+  cs|cache-size)
     du -sh cache
+  ;;
+  license)
+    cat LICENSE
+  ;;
+  help)
+    cat README.md
   ;;
 	*)
     echo "Use start, cache-size or clean"

@@ -33,10 +33,10 @@ class Response {
         }
       } else if ($status === self::STATUS_EXPECTING_HEADERS) {
         if (preg_match('/^(?P<name>.*?): (?P<value>.*?)$/', $line, $matches)) {
-          
+
           $name = $matches['name'];
           $value = $matches['value'];
-          
+
           $response->headers[$name] = $value;
 
         } else {
@@ -48,7 +48,7 @@ class Response {
             throw new Exception("Expecting headers, read '${line}'");
           }
 
-        } 
+        }
       }
     }
 
@@ -62,7 +62,7 @@ class Response {
   }
 
   private $protocol = 'HTTP/1.1',
-          $status = 200, 
+          $status = 200,
           $statusText = 'OK',
           $headers = [],
           $body = '';
@@ -117,6 +117,10 @@ class Response {
 
     $this->status = $status;
     $this->statusText = $statusTexts[$status];
+  }
+
+  public function getStatus() {
+    return $this->status;
   }
 
   public function getHeader($name) {
@@ -201,7 +205,7 @@ class Response {
     if ($this->hasHeader('X-Frame-Options')) {
       $this->removeHeader('X-Frame-Options');
     }
-   
+
     if ($this->hasContentType('text/html')) {
       $body = $this->getBody();
       $body = preg_replace_callback('/(?<attribute>src|href)=(?<quote>"|\')(?<url>.*?)\\2/', $this->getHtmlProxifiedUrl($url, $replaceUrl), $body);

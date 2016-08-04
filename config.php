@@ -13,7 +13,7 @@ function defineParam($name, $defaultValue) {
 }
 
 defineParam('PROXIFY_URL', 'http://localhost:9000');
-defineParam('PROXIFY_LOG_LEVEL', true); // TODO: Create different logging levels
+defineParam('PROXIFY_LOG_LEVEL', PROXIFY_LOG_LEVEL_DEBUG); // TODO: Create different logging levels
 defineParam('PROXIFY_LOG_FILE', 'proxify.log');
 defineParam('PROXIFY_CACHE', true);
 defineParam('PROXIFY_CACHE_EXPIRATION', 10);
