@@ -1,6 +1,7 @@
 <?php
 
 class Response {
+
   const STATUS_EXPECTING_HTTP = 0;
   const STATUS_EXPECTING_HEADERS = 1;
   const STATUS_EXPECTING_HTTP_OR_BODY = 2;
@@ -64,7 +65,7 @@ class Response {
   private $protocol = 'HTTP/1.1',
           $status = 200,
           $statusText = 'OK',
-          $headers = [],
+          $headers = array(),
           $body = '';
 
   public function setStatus($status) {
